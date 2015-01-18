@@ -13,16 +13,19 @@ public class Client
         Socket socket = new Socket (hostName, 22222);
         InputStream in = socket.getInputStream ();
         in = new BufferedInputStream (in, 1024*1024);
+        byte[] type = new byte [4];
+        byte[] buf = new byte [1024];
+        
         while (true) {
             long t0 = System.currentTimeMillis ();
             long sum = 0;
             int N = 10000000;
             for (int i = 0; i < N; i++) {
-                byte [] type = readBytes (in, 4);
+                readBytes (in, type, 4);
                 int len = readInt (in);
-                byte [] msg = readBytes (in, len);
-                processMessage (type, msg);
-                sum += msg.length + 8;
+                readBytes (in, buf, len);
+                processMessage (type, buf, len);
+                sum += len + 8;
             }
             long t1 = System.currentTimeMillis ();
             long t = t1 - t0;
@@ -31,25 +34,26 @@ public class Client
         }
     }
     
-    private static byte [] readBytes (InputStream in, int expectedSize) throws IOException
+    private static void readBytes (InputStream in, byte[] buffer, int expectedSize) throws IOException
     {
-        final byte[] buffer = new byte[expectedSize];
         int totalReadSize = 0;
         while (totalReadSize < expectedSize) {
             int readSize = in.read(buffer, totalReadSize, expectedSize - totalReadSize);
             if (readSize < 0) throw new EOFException ();
             totalReadSize += readSize;
         }
-        return buffer;
     }
+    
+    private static byte [] tmpBuf = new byte[4];
     
     private static final int readInt (InputStream in) throws IOException
     {
-        byte [] b = readBytes (in, 4);
+        byte[] b = tmpBuf;
+        readBytes (in, b, 4);
         return (((b[0] & 0xFF) << 24) + ((b[1] & 0xFF) << 16) + ((b[2] & 0xFF) << 8) + ((b[3] & 0xFF) << 0));
     }
     
-    private static void processMessage (byte [] type, byte [] msg)
+    private static void processMessage (byte [] type, byte [] msg, int len)
     {
     }
 }
