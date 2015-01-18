@@ -12,6 +12,7 @@ public class Client
         String hostName = args [0];
         Socket socket = new Socket (hostName, 22222);
         InputStream in = socket.getInputStream ();
+        in = new BufferedInputStream (in, 1024*1024);
         while (true) {
             long t0 = System.currentTimeMillis ();
             long sum = 0;
