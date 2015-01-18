@@ -8,7 +8,7 @@ import java.nio.channels.SocketChannel;
 
 public class Client
 {
-    private static ByteBuffer buf = ByteBuffer.allocateDirect (1024*512);
+    private static ByteBuffer buf = ByteBuffer.allocateDirect (1024*1024);
     
     public static void main (String [] args) throws Exception
     {
@@ -44,22 +44,19 @@ public class Client
 
     private static void ensure (int len, ByteChannel chan) throws IOException
     {
-        if (buf.position() > buf.capacity () - len) {
+        if (buf.remaining () < len) {
             buf.compact ();
             buf.flip ();
-        }
-        while (buf.remaining () < len) {
-            int oldpos = buf.position ();
-            buf.position (buf.limit ());
-            buf.limit (buf.capacity ());
-            chan.read (buf);
-            buf.limit (buf.position ());
-            buf.position (oldpos);
+            do {
+                buf.position (buf.limit ());
+                buf.limit (buf.capacity ());
+                chan.read (buf);
+                buf.flip ();
+            } while (buf.remaining () < len);
         }
     }
-
+    
     private static void processMessage (byte [] type, byte [] msg, int len)
     {
     }
-
 }
