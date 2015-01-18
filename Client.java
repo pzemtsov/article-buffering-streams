@@ -12,7 +12,6 @@ public class Client
         String hostName = args [0];
         Socket socket = new Socket (hostName, 22222);
         InputStream in = socket.getInputStream ();
-        in = new BufferedInputStream (in, 1024*1024);
         while (true) {
             long t0 = System.currentTimeMillis ();
             long sum = 0;
@@ -45,15 +44,10 @@ public class Client
     
     private static final int readInt (InputStream in) throws IOException
     {
-        int ch1 = in.read();
-        int ch2 = in.read();
-        int ch3 = in.read();
-        int ch4 = in.read();
-        if ((ch1 | ch2 | ch3 | ch4) < 0)
-            throw new EOFException();
-        return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+        byte [] b = readBytes (in, 4);
+        return (((b[0] & 0xFF) << 24) + ((b[1] & 0xFF) << 16) + ((b[2] & 0xFF) << 8) + ((b[3] & 0xFF) << 0));
     }
-
+    
     private static void processMessage (byte [] type, byte [] msg)
     {
     }
