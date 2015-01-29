@@ -14,8 +14,8 @@ public class StdInClient
         FileChannel chan = new FileInputStream ("/proc/self/fd/0").getChannel ();
 
         byte[] type = new byte [4];
-        byte[] msg = new byte [1024];
         buf.limit (0);
+        ByteBuffer msgBuf = buf.duplicate ();
         
         while (true) {
             long t0 = System.currentTimeMillis ();
@@ -27,8 +27,10 @@ public class StdInClient
                 ensure (4, chan);
                 int len = buf.getInt ();
                 ensure (len, chan);
-                buf.get (msg, 0, len);
-                processMessage (type, msg, len);
+                msgBuf.limit (buf.position () + len);
+                msgBuf.position (buf.position ());
+                buf.position (buf.position () + len);
+                processMessage (type, msgBuf);
                 sum += len + 8;
             }
             long t1 = System.currentTimeMillis ();
@@ -52,8 +54,9 @@ public class StdInClient
         }
     }
     
-    private static void processMessage (byte [] type, byte [] msg, int len)
+    static int num = 0;
+    
+    private static void processMessage (byte [] type, ByteBuffer buf)
     {
     }
-
 }
