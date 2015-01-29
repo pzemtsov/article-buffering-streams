@@ -3,7 +3,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class StdInClient
+
+public class StdInClient4
 {
     public static void main (String [] args) throws Exception
     {
@@ -40,13 +41,8 @@ public class StdInClient
     
     private static final int readInt (InputStream in) throws IOException
     {
-        int ch1 = in.read();
-        int ch2 = in.read();
-        int ch3 = in.read();
-        int ch4 = in.read();
-        if ((ch1 | ch2 | ch3 | ch4) < 0)
-            throw new EOFException();
-        return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+        byte [] b = readBytes (in, 4);
+        return (((b[0] & 0xFF) << 24) + ((b[1] & 0xFF) << 16) + ((b[2] & 0xFF) << 8) + ((b[3] & 0xFF) << 0));
     }
 
     private static void processMessage (byte [] type, byte [] msg)
