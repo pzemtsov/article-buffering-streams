@@ -49,12 +49,6 @@ public class StdInClient
         return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     }
 
-    private static final int readInt (InputStream in) throws IOException
-    {
-        byte [] b = readBytes (in, 4);
-        return (((b[0] & 0xFF) << 24) + ((b[1] & 0xFF) << 16) + ((b[2] & 0xFF) << 8) + ((b[3] & 0xFF) << 0));
-    }
-
     private static void processMessage (byte [] type, byte [] msg)
     {
     }
